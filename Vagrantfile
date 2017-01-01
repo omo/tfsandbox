@@ -9,7 +9,8 @@ AWS_SECRETS_PATH = 'aws.json'
 AWS_SSH_KEY_PATH = '~/.ssh/uswest2key.pem'
 AWS_SSH_KEYPAIR  = 'uswest2key'
 AWS_REGION = 'us-west-2'
-EC2_INSTANCE_TYPE = 't2.micro'
+EC2_INSTANCE_TYPE = 'g2.2xlarge'
+EC2_BD_MAPPINGS = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 50 }, { 'DeviceName' => '/dev/sdb', 'VirtualName' => 'ephemeral0' }]
 
 Vagrant.configure("2") do |config|
   if File.exists?(AWS_SECRETS_PATH)
@@ -22,7 +23,9 @@ Vagrant.configure("2") do |config|
       # Ubuntu 16.10. See https://cloud-images.ubuntu.com/locator/ec2/
       aws.ami = 'ami-55ff4a35'
       aws.instance_type = EC2_INSTANCE_TYPE
+      aws.block_device_mapping = EC2_BD_MAPPINGS
       aws.security_groups = ['default']
+
       override.ssh.username = 'ubuntu'
       override.ssh.private_key_path = AWS_SSH_KEY_PATH
       override.vm.box = "aws-dummy"
@@ -62,6 +65,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :shell, name: "pip", privileged: false, inline: <<-SHELL
     pip install --upgrade pip
-    pip install tensorflow-gpu sklearn pandas scipy jupyter Keras
+    pip install tensorflow-gpu sklearn matplotlib pandas scipy jupyter Keras Pillow
   SHELL
 end

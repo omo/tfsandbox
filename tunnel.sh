@@ -1,0 +1,1 @@
+vagrant ssh -- -D 1080 -N -n
